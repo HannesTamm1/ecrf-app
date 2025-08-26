@@ -7,6 +7,11 @@ use App\Http\Controllers\FormController;
 use App\Http\Controllers\MappingController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\GenerateController;
+use App\Models\FormField;
+Route::get('/api/form-fields/{form}', function (\App\Models\Form $form) {
+    return FormField::where('form_id', $form->id)->get(['name', 'label', 'type', 'required']);
+});
+
 
 Route::get('/', fn() => Inertia::render('UploadPage'))->name('upload');
 

@@ -1,6 +1,7 @@
 import { createApp, h } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
-import { ZiggyVue } from "ziggy";
+import { ZiggyVue } from "ziggy-js";
+import { Ziggy } from "./ziggy.js";
 import axios from "axios";
 
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
