@@ -1,7 +1,26 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use App\Http\Controllers\UploadController;
+use App\Http\Controllers\FormController;
+use App\Http\Controllers\MappingController;
+use App\Http\Controllers\ImportController;
+use App\Http\Controllers\GenerateController;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', fn() => Inertia::render('UploadPage'))->name('upload');
+
+Route::get('/wizard', fn() => Inertia::render('ImportWizard'))->name('wizard');
+Route::get('/output', fn() => Inertia::render('OutputGenerator'))->name('output');
+
+// API-style endpoints (no auth)
+Route::prefix('api')->group(function () {
+    Route::post('/upload/json', [UploadController::class, 'uploadJson']);
+    Route::post('/upload/excel', [UploadController::class, 'uploadExcel']);
+
+    Route::get('/forms', [FormController::class, 'index']);
+    Route::post('/map-columns', [MappingController::class, 'validateMapping']);
+    Route::post('/import', [ImportController::class, 'import']);
+
+    Route::get('/generate/{type}', [GenerateController::class, 'generate']);
 });
