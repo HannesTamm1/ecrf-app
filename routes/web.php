@@ -12,6 +12,8 @@ Route::get('/api/form-fields/{form}', function (\App\Models\Form $form) {
     return FormField::where('form_id', $form->id)->get(['name', 'label', 'type', 'required']);
 });
 
+Route::post('/map-columns', [ImportController::class, 'validateMappings']);
+Route::post('/auto-match-suggestions', [ImportController::class, 'getAutoMatchSuggestions']);
 
 Route::get('/', fn() => Inertia::render('UploadPage'))->name('upload');
 

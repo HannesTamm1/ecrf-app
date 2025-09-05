@@ -43,6 +43,8 @@ class ImportController extends Controller
 
         $imported = 0;
         $warnings = [];
+        $errors = [];
+        
         // Iterate data rows
         for ($row = 2; $row <= $highestRow; $row++) {
             $rowArr = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, true, true, false)[0] ?? [];
@@ -64,20 +66,130 @@ class ImportController extends Controller
                 // Still store for traceability, but you could choose to skip
             }
 
-            ImportedRecord::create([
-                'form_id' => $form->id,
-                'original_columns' => $header,
-                'mapping_used' => $validated['mappings'],
-                'raw_row' => $raw,
-                'mapped_row' => $mapped,
-            ]);
-            $imported++;
+            try {
+                ImportedRecord::create([
+                    'form_id' => $form->id,
+                    'original_columns' => $header,
+                    'mapping_used' => $validated['mappings'],
+                    'raw_row' => $raw,
+                    'mapped_row' => $mapped,
+                ]);
+                $imported++;
+            } catch (\Exception $e) {
+                $errors[] = "Row {$row}: " . $e->getMessage();
+            }
         }
 
         return response()->json([
             'status' => 'success',
             'imported' => $imported,
             'warnings' => $warnings,
+            'errors' => $errors,
+            'message' => "Successfully imported {$imported} records" . 
+                        (count($warnings) ? " with " . count($warnings) . " warnings" : "") .
+                        (count($errors) ? " and " . count($errors) . " errors" : "")
         ]);
+    }
+
+    /**
+     * Validate column mappings and provide feedback
+     */
+    public function validateMappings(Request $request)
+    {
+        $validated = $request->validate([
+            'form_id' => 'required|integer|exists:forms,id',
+            'mappings' => 'required|array',
+        ]);
+
+        $form = Form::with('fields')->findOrFail($validated['form_id']);
+        $formFields = $form->fields->keyBy('name');
+        $requiredFields = $form->fields->where('required', true)->pluck('name')->toArray();
+
+        $feedback = [
+            'valid' => true,
+            'errors' => [],
+            'warnings' => [],
+            'mapped_required' => [],
+            'unmapped_required' => [],
+        ];
+
+        // Check if all mapped fields exist
+        foreach ($validated['mappings'] as $excelCol => $fieldName) {
+            if (!$formFields->has($fieldName)) {
+                $feedback['errors'][] = "Field '{$fieldName}' does not exist in the selected form";
+                $feedback['valid'] = false;
+            }
+        }
+
+        // Check required field coverage
+        $mappedFields = array_values($validated['mappings']);
+        foreach ($requiredFields as $requiredField) {
+            if (in_array($requiredField, $mappedFields)) {
+                $feedback['mapped_required'][] = $requiredField;
+            } else {
+                $feedback['unmapped_required'][] = $requiredField;
+                $feedback['warnings'][] = "Required field '{$requiredField}' is not mapped";
+            }
+        }
+
+        return response()->json($feedback);
+    }
+
+    /**
+     * Get auto-matching suggestions using fuzzy string matching
+     */
+    public function getAutoMatchSuggestions(Request $request)
+    {
+        $validated = $request->validate([
+            'form_id' => 'required|integer|exists:forms,id',
+            'excel_columns' => 'required|array',
+        ]);
+
+        $form = Form::with('fields')->findOrFail($validated['form_id']);
+        $suggestions = [];
+
+        foreach ($validated['excel_columns'] as $column) {
+            $columnSuggestions = [];
+            
+            foreach ($form->fields as $field) {
+                // Calculate similarity scores
+                $nameScore = $this->calculateSimilarity($column, $field->name);
+                $labelScore = $field->label ? $this->calculateSimilarity($column, $field->label) : 0;
+                
+                $maxScore = max($nameScore, $labelScore);
+                
+                if ($maxScore > 0.6) { // Only include if similarity > 60%
+                    $columnSuggestions[] = [
+                        'field_name' => $field->name,
+                        'field_label' => $field->label,
+                        'score' => $maxScore,
+                        'confidence' => round($maxScore * 100)
+                    ];
+                }
+            }
+
+            // Sort by score descending and take top 3
+            usort($columnSuggestions, fn($a, $b) => $b['score'] <=> $a['score']);
+            $suggestions[$column] = array_slice($columnSuggestions, 0, 3);
+        }
+
+        return response()->json(['suggestions' => $suggestions]);
+    }
+
+    /**
+     * Calculate string similarity using Levenshtein distance
+     */
+    private function calculateSimilarity($str1, $str2)
+    {
+        $str1 = strtolower(trim($str1));
+        $str2 = strtolower(trim($str2));
+        
+        if ($str1 === $str2) return 1.0;
+        if (empty($str1) || empty($str2)) return 0.0;
+        
+        $maxLen = max(strlen($str1), strlen($str2));
+        $distance = levenshtein($str1, $str2);
+        
+        return 1 - ($distance / $maxLen);
     }
 }
