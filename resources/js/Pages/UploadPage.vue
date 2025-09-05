@@ -49,44 +49,46 @@ async function onExcelUpload() {
 
 
 <template>
-    <Layout>
-        <div class="grid gap-6 md:grid-cols-2">
-            <!-- JSON Upload -->
-            <div class="bg-white p-4 rounded-2xl shadow">
-                <h2 class="font-semibold mb-3">Upload Project JSON</h2>
-                <input type="file" accept="application/json" @change="onJsonFileChange" />
-                <button class="mt-3 px-4 py-2 rounded-xl bg-blue-600 text-white" :disabled="uploadingJson || !jsonFile"
-                    @click="onJsonUpload">
-                    {{ uploadingJson ? 'Uploading…' : 'Upload & Parse' }}
-                </button>
+  <Layout>
+    <div class="grid gap-6 md:grid-cols-2">
+      <!-- JSON Upload -->
+      <div class="bg-white p-4 rounded-2xl shadow">
+        <h2 class="font-semibold mb-3">Upload Project JSON</h2>
+        <input type="file" accept="application/json" @change="onJsonFileChange" />
+        <button class="mt-3 px-4 py-2 rounded-xl bg-blue-600 text-white" :disabled="uploadingJson || !jsonFile"
+          @click="onJsonUpload">
+          {{ uploadingJson ? 'Uploading…' : 'Upload & Parse' }}
+        </button>
 
-                <div v-if="meta" class="mt-4 text-sm">
-                    <div class="font-medium">Project Metadata</div>
-                    <div>Name: {{ meta.project_name }}</div>
-                    <div>Forms: {{ meta.forms }}</div>
-                    <div>Version: {{ meta.version }}</div>
-                    <div>Project ID: {{ meta.project_id }}</div>
-                </div>
-            </div>
-
-            <!-- Excel Upload -->
-            <div class="bg-white p-4 rounded-2xl shadow">
-                <h2 class="font-semibold mb-3">Upload Excel (for import mapping)</h2>
-                <input type="file" accept=".xlsx,.xls,.csv" @change="onExcelFileChange" />
-                <button class="mt-3 px-4 py-2 rounded-xl bg-emerald-600 text-white"
-                    :disabled="uploadingExcel || !excelFile" @click="onExcelUpload">
-                    {{ uploadingExcel ? 'Reading…' : 'Read Columns' }}
-                </button>
-
-                <div v-if="excelColumns.length" class="mt-4">
-                    <div class="font-medium text-sm mb-1">Detected Columns</div>
-                    <div class="flex flex-wrap gap-2">
-                        <span v-for="c in excelColumns" :key="c" class="px-2 py-1 bg-gray-100 rounded">
-                            {{ c }}
-                        </span>
-                    </div>
-                </div>
-            </div>
+        <div v-if="meta" class="mt-4 text-sm">
+          <div class="font-medium">Project Metadata</div>
+          <div>Status: {{ meta.status }}</div>
+          <div>Name: {{ meta.project_name }}</div>
+          <div>Forms: {{ meta.forms }}</div>
+          <div>Version: {{ meta.version }}</div>
+          <div>Project ID: {{ meta.project_id }}</div>
+          <div v-if="meta.message" class="text-red-600">{{ meta.message }}</div>
         </div>
-    </Layout>
+      </div>
+
+      <!-- Excel Upload -->
+      <div class="bg-white p-4 rounded-2xl shadow">
+        <h2 class="font-semibold mb-3">Upload Excel (for import mapping)</h2>
+        <input type="file" accept=".xlsx,.xls,.csv" @change="onExcelFileChange" />
+        <button class="mt-3 px-4 py-2 rounded-xl bg-emerald-600 text-white" :disabled="uploadingExcel || !excelFile"
+          @click="onExcelUpload">
+          {{ uploadingExcel ? 'Reading…' : 'Read Columns' }}
+        </button>
+
+        <div v-if="excelColumns.length" class="mt-4">
+          <div class="font-medium text-sm mb-1">Detected Columns</div>
+          <div class="flex flex-wrap gap-2">
+            <span v-for="c in excelColumns" :key="c" class="px-2 py-1 bg-gray-100 rounded">
+              {{ c }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Layout>
 </template>
