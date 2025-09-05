@@ -21,11 +21,12 @@ class MappingController extends Controller
 
         $invalid = [];
         foreach ($data['mappings'] as $col => $field) {
-            if (!in_array($field, $fieldNames))
+            // Skip null or empty field mappings
+            if ($field !== null && $field !== '' && !in_array($field, $fieldNames)) {
                 $invalid[] = $field;
+            }
         }
 
-        // For now, we can’t count valid rows until import happens; return a nominal value.
         return response()->json([
             'status' => empty($invalid) ? 'validated' : 'warnings',
             'valid_rows' => 0,
