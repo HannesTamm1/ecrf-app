@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ImportedRecord extends Model
 {
-    protected $fillable = ['form_id', 'original_columns', 'mapping_used', 'raw_row', 'mapped_row'];
+    protected $fillable = ['form_id', 'original_columns', 'mapping_used', 'raw_row', 'mapped_row', 'quality_score'];
     protected $casts = [
         'original_columns' => 'array',
         'mapping_used' => 'array',

@@ -43,6 +43,7 @@ class ImportController extends Controller
 
         $imported = 0;
         $warnings = [];
+        $qualityScores = [];
         // Iterate data rows
         for ($row = 2; $row <= $highestRow; $row++) {
             $rowArr = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, true, true, false)[0] ?? [];
@@ -64,20 +65,82 @@ class ImportController extends Controller
                 // Still store for traceability, but you could choose to skip
             }
 
+            // Calculate quality score (0-100)
+            $qualityScore = $this->calculateQualityScore($mapped, $requiredFields, $validated['mappings'], $form->fields);
+            $qualityScores[] = $qualityScore;
+
             ImportedRecord::create([
                 'form_id' => $form->id,
                 'original_columns' => $header,
                 'mapping_used' => $validated['mappings'],
                 'raw_row' => $raw,
                 'mapped_row' => $mapped,
+                'quality_score' => $qualityScore,
             ]);
             $imported++;
         }
+
+        $averageQuality = count($qualityScores) > 0 ? round(array_sum($qualityScores) / count($qualityScores), 2) : 0;
 
         return response()->json([
             'status' => 'success',
             'imported' => $imported,
             'warnings' => $warnings,
+            'average_quality_score' => $averageQuality,
         ]);
+    }
+
+    /**
+     * Calculate data quality score (0-100) based on:
+     * - Required field completeness (40% weight)
+     * - Data validation success (40% weight) 
+     * - Mapping accuracy (20% weight)
+     */
+    private function calculateQualityScore(array $mapped, array $requiredFields, array $mappings, $formFields): float
+    {
+        $score = 0;
+
+        // 1. Required field completeness (40 points)
+        $totalRequired = count($requiredFields);
+        if ($totalRequired > 0) {
+            $completedRequired = 0;
+            foreach ($requiredFields as $required) {
+                if (isset($mapped[$required]) && $mapped[$required] !== null && $mapped[$required] !== '') {
+                    $completedRequired++;
+                }
+            }
+            $score += ($completedRequired / $totalRequired) * 40;
+        } else {
+            $score += 40; // No required fields = full points
+        }
+
+        // 2. Data validation success (40 points)
+        $totalFields = count($mapped);
+        if ($totalFields > 0) {
+            $validFields = 0;
+            foreach ($mapped as $fieldName => $value) {
+                if ($value !== null && $value !== '') {
+                    // Basic validation - check if field has content
+                    $validFields++;
+                }
+            }
+            $score += ($validFields / $totalFields) * 40;
+        }
+
+        // 3. Mapping accuracy (20 points)
+        $totalMappings = count($mappings);
+        if ($totalMappings > 0) {
+            $validMappings = 0;
+            foreach ($mappings as $excelCol => $fieldName) {
+                if ($fieldName !== null && $fieldName !== '') {
+                    $validMappings++;
+                }
+            }
+            $score += ($validMappings / $totalMappings) * 20;
+        } else {
+            $score += 20; // No mappings = full points
+        }
+
+        return round($score, 2);
     }
 }

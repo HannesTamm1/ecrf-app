@@ -1,7 +1,7 @@
 <script setup>
 import Layout from './Shared/Layout.vue'
 import axios from 'axios'
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, computed } from 'vue'
 
 const forms = ref([])
 const selectedFormId = ref(null)
@@ -10,6 +10,7 @@ const mapping = reactive({}) // switched to reactive for cleaner usage
 
 const fields = ref([])
 const statusMsg = ref(null)
+const qualityScore = ref(null)
 const projectId = ref(null)
 
 const excelFile = ref(null)
@@ -76,6 +77,7 @@ async function importData() {
             headers: { 'Content-Type': 'multipart/form-data' }
         })
         statusMsg.value = `Imported ${data.imported}. ${data.warnings?.length ? data.warnings.length + ' warnings' : 'No warnings'}`
+        qualityScore.value = data.average_quality_score || 0
     } finally {
         importing.value = false
     }
@@ -88,6 +90,16 @@ function handleFileChange(e) {
     const file = e.target.files?.[0] || null
     excelFile.value = file
 }
+
+/**
+ * Get quality score color based on score value
+ */
+const qualityScoreColor = computed(() => {
+    if (qualityScore.value === null) return 'text-gray-500'
+    if (qualityScore.value >= 80) return 'text-green-600'
+    if (qualityScore.value >= 60) return 'text-yellow-600'
+    return 'text-red-600'
+})
 </script>
 
 <template>
@@ -114,6 +126,25 @@ function handleFileChange(e) {
                     </div>
 
                     <div v-if="statusMsg" class="mt-4 text-sm text-gray-700">{{ statusMsg }}</div>
+                    <div v-if="qualityScore !== null" class="mt-2">
+                        <div class="text-sm font-medium">Data Quality Score</div>
+                        <div class="flex items-center gap-2">
+                            <div :class="['text-lg font-bold', qualityScoreColor]">
+                                {{ qualityScore }}/100
+                            </div>
+                            <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                <div 
+                                    class="h-2 rounded-full transition-all duration-500"
+                                    :class="{
+                                        'bg-green-500': qualityScore >= 80,
+                                        'bg-yellow-500': qualityScore >= 60 && qualityScore < 80,
+                                        'bg-red-500': qualityScore < 60
+                                    }"
+                                    :style="{ width: qualityScore + '%' }"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
