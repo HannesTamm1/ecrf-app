@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Project;
 use Illuminate\Http\Request;
-use App\Models\{Project, Form, FormField, ImportedRecord};
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -15,7 +15,7 @@ class GenerateController extends Controller
         $projectId = $request->integer('project_id');
         $project = Project::with('forms.fields')->findOrFail($projectId);
 
-        $ss = new Spreadsheet();
+        $ss = new Spreadsheet;
 
         switch ($type) {
             case 'scheduler':
@@ -24,7 +24,7 @@ class GenerateController extends Controller
                 $sheet = $ss->getActiveSheet();
                 $sheet->setTitle(substr('scheduler_overview', 0, 31));
                 $sheet->fromArray([
-                    ['Scheduler', 'Event', 'Form', 'Field', 'Type', 'Required', 'Label', 'Randomization', 'To_validate', 'Item values', 'Edit_check', 'Export_variable', 'Visible_if', 'Enable_if']
+                    ['Scheduler', 'Event', 'Form', 'Field', 'Type', 'Required', 'Label', 'Randomization', 'To_validate', 'Item values', 'Edit_check', 'Export_variable', 'Visible_if', 'Enable_if'],
                 ], null, 'A1');
                 $row = 2;
                 foreach ($project->forms as $form) {
@@ -45,8 +45,8 @@ class GenerateController extends Controller
                                 data_get($f->meta, 'export_variable'),
                                 data_get($f->logic, 'visible_if'),
                                 data_get($f->logic, 'enable_if'),
-                            ]
-                        ], null, 'A' . $row++);
+                            ],
+                        ], null, 'A'.$row++);
                     }
                 }
                 break;
@@ -71,14 +71,14 @@ class GenerateController extends Controller
                         'Selected',
                         'Edit_check',
                         'Visible_if',
-                        'Enable_if'
-                    ]
+                        'Enable_if',
+                    ],
                 ], null, 'A1');
                 $row = 2;
                 foreach ($project->forms as $form) {
                     foreach ($form->fields as $f) {
                         $options = $f->options ?: [];
-                        if (!count($options)) {
+                        if (! count($options)) {
                             $sheet->fromArray([
                                 [
                                     $form->title,
@@ -97,8 +97,8 @@ class GenerateController extends Controller
                                     data_get($f->logic, 'edit_check'),
                                     data_get($f->logic, 'visible_if'),
                                     data_get($f->logic, 'enable_if'),
-                                ]
-                            ], null, 'A' . $row++);
+                                ],
+                            ], null, 'A'.$row++);
                         } else {
                             foreach ($options as $opt) {
                                 $sheet->fromArray([
@@ -119,8 +119,8 @@ class GenerateController extends Controller
                                         data_get($f->logic, 'edit_check'),
                                         data_get($f->logic, 'visible_if'),
                                         data_get($f->logic, 'enable_if'),
-                                    ]
-                                ], null, 'A' . $row++);
+                                    ],
+                                ], null, 'A'.$row++);
                             }
                         }
                     }
@@ -142,8 +142,8 @@ class GenerateController extends Controller
                         'Item values',
                         'Edit_check',
                         'Visible_if',
-                        'Enable_if'
-                    ]
+                        'Enable_if',
+                    ],
                 ], null, 'A1');
                 $row = 2;
                 foreach ($project->forms as $form) {
@@ -162,8 +162,8 @@ class GenerateController extends Controller
                                     data_get($f->logic, 'edit_check'),
                                     data_get($f->logic, 'visible_if'),
                                     data_get($f->logic, 'enable_if'),
-                                ]
-                            ], null, 'A' . $row++);
+                                ],
+                            ], null, 'A'.$row++);
                         }
                     }
                 }

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Form;
+use App\Models\ImportedRecord;
 use Illuminate\Http\Request;
-use App\Models\{Form, FormField, ImportedRecord};
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use Illuminate\Support\Str;
 
 class ImportController extends Controller
 {
@@ -32,7 +32,7 @@ class ImportController extends Controller
         // Read header
         $highestColumn = $sheet->getHighestColumn();
         $highestRow = $sheet->getHighestRow();
-        $header = $sheet->rangeToArray('A1:' . $highestColumn . '1', null, true, true, true)[1] ?? [];
+        $header = $sheet->rangeToArray('A1:'.$highestColumn.'1', null, true, true, true)[1] ?? [];
         $header = array_map('trim', array_values($header));
 
         // Build column index: HeaderText => column letter index
@@ -46,11 +46,12 @@ class ImportController extends Controller
         $qualityScores = [];
         // Iterate data rows
         for ($row = 2; $row <= $highestRow; $row++) {
-            $rowArr = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, true, true, false)[0] ?? [];
+            $rowArr = $sheet->rangeToArray('A'.$row.':'.$highestColumn.$row, null, true, true, false)[0] ?? [];
             // Raw row by header
             $raw = [];
-            foreach ($header as $i => $h)
+            foreach ($header as $i => $h) {
                 $raw[$h] = $rowArr[$i] ?? null;
+            }
 
             // Apply mappings -> mapped_row
             $mapped = [];
@@ -59,9 +60,9 @@ class ImportController extends Controller
             }
 
             // Check required fields
-            $missingRequired = array_filter($requiredFields, fn($r) => !isset($mapped[$r]) || $mapped[$r] === null || $mapped[$r] === '');
+            $missingRequired = array_filter($requiredFields, fn ($r) => ! isset($mapped[$r]) || $mapped[$r] === null || $mapped[$r] === '');
             if (count($missingRequired)) {
-                $warnings[] = "Row {$row} missing required: " . implode(', ', $missingRequired);
+                $warnings[] = "Row {$row} missing required: ".implode(', ', $missingRequired);
                 // Still store for traceability, but you could choose to skip
             }
 
@@ -93,7 +94,7 @@ class ImportController extends Controller
     /**
      * Calculate data quality score (0-100) based on:
      * - Required field completeness (40% weight)
-     * - Data validation success (40% weight) 
+     * - Data validation success (40% weight)
      * - Mapping accuracy (20% weight)
      */
     private function calculateQualityScore(array $mapped, array $requiredFields, array $mappings, $formFields): float

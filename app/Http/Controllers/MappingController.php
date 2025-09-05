@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Form;
 use App\Models\FormField;
+use Illuminate\Http\Request;
 
 class MappingController extends Controller
 {
@@ -21,15 +21,16 @@ class MappingController extends Controller
 
         $invalid = [];
         foreach ($data['mappings'] as $col => $field) {
-            if (!in_array($field, $fieldNames))
+            if (! in_array($field, $fieldNames)) {
                 $invalid[] = $field;
+            }
         }
 
         // For now, we can’t count valid rows until import happens; return a nominal value.
         return response()->json([
             'status' => empty($invalid) ? 'validated' : 'warnings',
             'valid_rows' => 0,
-            'warnings' => empty($invalid) ? [] : ['Unknown field(s): ' . implode(', ', $invalid)]
+            'warnings' => empty($invalid) ? [] : ['Unknown field(s): '.implode(', ', $invalid)],
         ]);
     }
 }

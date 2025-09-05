@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Form;
+use App\Models\FormField;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\{Project, Form, FormField};
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class UploadController extends Controller
@@ -13,10 +15,9 @@ class UploadController extends Controller
     public function uploadJson(Request $request)
     {
         $file = $request->file('file');
-        if (!$file || $file->getClientOriginalExtension() !== 'json') {
+        if (! $file || $file->getClientOriginalExtension() !== 'json') {
             return response()->json(['status' => 'error', 'message' => 'JSON file required'], 422);
         }
-
 
         // 🔹 Compute hash
         $hash = hash_file('sha256', $file->getRealPath());
@@ -35,12 +36,11 @@ class UploadController extends Controller
         }
 
         $data = json_decode($file->get(), true);
-        if (!$data) {
+        if (! $data) {
             return response()->json(['status' => 'error', 'message' => 'Invalid JSON'], 422);
         }
         $projectName = data_get($data, 'project.name', 'Unnamed Project');
         $version = data_get($data, 'projectVersions.0.v') ?? data_get($data, 'projectVersions.v');
-
 
         $projectName = data_get($data, 'project.name', 'Unnamed Project');
         $version = data_get($data, 'projectVersions.0.v') ?? data_get($data, 'projectVersions.v');
@@ -52,7 +52,6 @@ class UploadController extends Controller
                 'raw_json' => $data,
                 'file_hash' => $hash,
             ]);
-
 
             // Build a map: form id -> title + fields (flatten as needed)
             $formsArr = data_get($data, 'forms', []);
@@ -105,16 +104,17 @@ class UploadController extends Controller
     public function uploadExcel(Request $request)
     {
         $file = $request->file('file');
-        if (!$file)
+        if (! $file) {
             return response()->json(['status' => 'error', 'message' => 'Excel file required'], 422);
+        }
         $ext = strtolower($file->getClientOriginalExtension());
-        if (!in_array($ext, ['xlsx', 'xls', 'csv'])) {
+        if (! in_array($ext, ['xlsx', 'xls', 'csv'])) {
             return response()->json(['status' => 'error', 'message' => 'Only xlsx/xls/csv'], 422);
         }
 
         $spreadsheet = IOFactory::load($file->getRealPath());
         $sheet = $spreadsheet->getSheet(0);
-        $firstRow = $sheet->rangeToArray('A1:' . $sheet->getHighestColumn() . '1', null, true, true, true)[1] ?? [];
+        $firstRow = $sheet->rangeToArray('A1:'.$sheet->getHighestColumn().'1', null, true, true, true)[1] ?? [];
         $columns = array_values(array_filter(array_map('trim', array_values($firstRow))));
 
         return response()->json(['status' => 'ok', 'columns' => $columns]);
