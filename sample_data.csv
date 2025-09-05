@@ -1,0 +1,6 @@
+patient_id,age,gender,birth_date,weight,height,ethnicity
+001,45,Male,1978-03-15,75,175,Caucasian
+002,32,Female,1991-07-22,68,162,Hispanic
+003,58,Male,1965-11-08,82,180,African American
+004,41,Female,1982-12-03,65,158,Caucasian
+005,37,Male,1986-05-17,73,172,Asian

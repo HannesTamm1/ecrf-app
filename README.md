@@ -1,61 +1,337 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ECRF System - Electronic Case Report Form Management Platform
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://img.shields.io/badge/Laravel-11-red.svg" alt="Laravel 11">
+  <img src="https://img.shields.io/badge/Vue.js-3-green.svg" alt="Vue.js 3">
+  <img src="https://img.shields.io/badge/Inertia.js-2-purple.svg" alt="Inertia.js 2">
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License">
 </p>
 
-## About Laravel
+A modern, production-ready Electronic Case Report Form (ECRF) management system built with Laravel and Vue.js. This system provides a complete solution for clinical research data management with intelligent field mapping, drag-and-drop file uploads, and automated data import/export capabilities.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✨ Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🔐 Authentication & Security
+- **User Authentication**: Complete login/logout system with sample users
+- **Role-based Access**: Secure access controls for different user types
+- **CSRF Protection**: Built-in security measures
+- **Input Validation**: Comprehensive data validation throughout
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 📁 File Management
+- **Drag & Drop Upload**: Modern file upload interface with visual feedback
+- **Multi-format Support**: JSON project files, Excel (.xlsx, .xls), and CSV files
+- **File Validation**: Automatic file type and content validation
+- **Progress Tracking**: Real-time upload progress and status feedback
 
-## Learning Laravel
+### 🧠 Intelligent Field Mapping
+- **Fuzzy Matching Algorithm**: Advanced string similarity matching using multiple algorithms:
+  - Levenshtein distance calculation
+  - Jaro-Winkler similarity
+  - Word-based matching
+  - Exact and partial string matching
+- **Auto-suggestions**: Automatic field mapping recommendations with confidence scores
+- **Visual Mapping Interface**: Intuitive drag-and-drop field mapping wizard
+- **Validation Feedback**: Real-time mapping validation and error reporting
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 📊 Data Import/Export
+- **Excel Import**: Sophisticated Excel/CSV data import with column mapping
+- **Data Validation**: Import validation with detailed error reporting
+- **Export Generation**: Multiple export formats (Excel, structured data)
+- **Batch Processing**: Efficient handling of large datasets
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 🎨 Modern User Interface
+- **Responsive Design**: Mobile-first responsive interface using Tailwind CSS
+- **Dark/Light Themes**: Modern color schemes and visual hierarchy
+- **Interactive Components**: Rich UI components with smooth animations
+- **Accessibility**: WCAG compliant interface design
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🏥 Clinical Research Ready
+- **Form Management**: Complete form and field definition system
+- **Project Organization**: Multi-project support with versioning
+- **Field Types**: Support for various clinical data types
+- **Conditional Logic**: Advanced form logic and dependencies
 
-## Laravel Sponsors
+## 🚀 Quick Start
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Option 1: Automated Setup (Recommended)
 
-### Premium Partners
+```bash
+# Clone the repository
+git clone https://github.com/HannesTamm1/ecrf-app.git
+cd ecrf-app
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Run the automated setup script
+chmod +x setup.sh
+./setup.sh
+```
 
-## Contributing
+The setup script will:
+- Install all dependencies (PHP and Node.js)
+- Set up the database with sample data
+- Build frontend assets
+- Configure the application
+- Optionally start the development server
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Option 2: Manual Setup
 
-## Code of Conduct
+#### Prerequisites
+- PHP 8.2 or higher
+- Composer
+- Node.js 18+ and npm
+- SQLite (default) or MySQL/PostgreSQL
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### Installation Steps
 
-## Security Vulnerabilities
+1. **Clone and Install Dependencies**
+```bash
+git clone https://github.com/HannesTamm1/ecrf-app.git
+cd ecrf-app
+composer install
+npm install
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+2. **Environment Setup**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## License
+3. **Database Setup**
+```bash
+# For SQLite (default)
+touch database/database.sqlite
+php artisan migrate
+php artisan db:seed
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# For MySQL/PostgreSQL, update .env file first, then:
+# php artisan migrate
+# php artisan db:seed
+```
+
+4. **Build Assets and Start**
+```bash
+npm run build
+php artisan serve
+```
+
+Visit `http://localhost:8000` to access the application.
+
+### Option 3: Docker Deployment
+
+```bash
+# Build and start containers
+docker-compose up -d
+
+# Run initial setup inside container
+docker-compose exec app php artisan migrate
+docker-compose exec app php artisan db:seed
+```
+
+Visit `http://localhost:8080` to access the application.
+
+## 👥 Demo Users
+
+The system comes with pre-configured demo users for testing:
+
+| Role | Email | Password | Description |
+|------|-------|----------|-------------|
+| Admin | admin@ecrf.com | password | Full system access |
+| Researcher | researcher@ecrf.com | password | Research coordinator access |
+| User | user@ecrf.com | password | Data entry user access |
+
+## 📋 Sample Data
+
+The system includes a comprehensive demo project:
+
+### Clinical Trial Demo Project
+- **Demographics Form**: Patient demographic information
+  - Patient ID, Age, Gender, Date of Birth
+  - Weight, Height, Ethnicity
+  
+- **Medical History Form**: Patient medical background
+  - Diabetes and Hypertension history
+  - Current medications and allergies
+  - Previous surgeries
+  
+- **Laboratory Results Form**: Lab test data
+  - Hemoglobin, White Blood Cell Count
+  - Platelet Count, Glucose, Creatinine
+  - Test dates and values
+
+## 🔧 System Architecture
+
+### Backend (Laravel)
+- **Models**: Project, Form, FormField, ImportedRecord, User
+- **Controllers**: Authentication, Upload, Import, Export, Mapping
+- **Services**: File processing, data validation, field matching
+- **Database**: SQLite (default), MySQL/PostgreSQL support
+
+### Frontend (Vue.js + Inertia.js)
+- **Components**: Reusable UI components with Tailwind CSS
+- **Pages**: Upload, Import Wizard, Export Generator, Authentication
+- **State Management**: Reactive data handling with Vue 3 Composition API
+- **File Handling**: Drag-and-drop with progress tracking
+
+### Key Technologies
+- **Laravel 11**: PHP framework for robust backend API
+- **Vue.js 3**: Modern JavaScript framework with Composition API
+- **Inertia.js**: SPA-like experience without API complexity
+- **Tailwind CSS**: Utility-first CSS framework
+- **PhpSpreadsheet**: Excel file processing
+- **SQLite/MySQL**: Database storage options
+
+## 📖 User Guide
+
+### 1. Uploading Project Files
+
+1. **Login** with one of the demo accounts
+2. **Navigate** to the Upload page
+3. **Drag and drop** or click to select JSON project files
+4. **Monitor** upload progress and validation results
+5. **Review** project metadata and form structure
+
+### 2. Data Import Process
+
+1. **Select Target Form** from your uploaded projects
+2. **Upload Excel/CSV** data file using drag-and-drop
+3. **Review Column Detection** and data structure
+4. **Map Fields** using the intelligent mapping wizard:
+   - Use auto-suggestions for quick mapping
+   - Manually adjust mappings as needed
+   - Review confidence scores for suggestions
+5. **Validate Mapping** to check for errors
+6. **Import Data** with progress tracking
+
+### 3. Field Mapping Features
+
+The system provides intelligent field mapping with:
+- **Automatic Suggestions**: Based on field names and labels
+- **Confidence Scoring**: Percentage-based matching confidence
+- **Multiple Algorithms**: Various string similarity methods
+- **Manual Override**: Full control over field assignments
+- **Real-time Validation**: Immediate feedback on mapping quality
+
+### 4. Data Export
+
+1. **Choose Export Type**: Various format options
+2. **Select Data Range**: Specify which data to export
+3. **Generate Export**: Download processed files
+4. **Review Results**: Validation and export summary
+
+## 🛠️ Development
+
+### Project Structure
+```
+ecrf-app/
+├── app/
+│   ├── Http/Controllers/     # API and web controllers
+│   ├── Models/              # Eloquent models
+│   └── Services/            # Business logic services
+├── database/
+│   ├── migrations/          # Database schema
+│   └── seeders/            # Sample data
+├── resources/
+│   ├── js/
+│   │   └── Pages/          # Vue.js pages
+│   └── views/              # Blade templates
+├── routes/                 # Application routes
+└── docker/                # Docker configuration
+```
+
+### Available Commands
+
+```bash
+# Development
+npm run dev              # Start Vite dev server
+php artisan serve       # Start Laravel dev server
+
+# Building
+npm run build           # Build production assets
+php artisan optimize    # Optimize Laravel for production
+
+# Database
+php artisan migrate     # Run migrations
+php artisan db:seed     # Seed sample data
+php artisan migrate:fresh --seed  # Fresh install with data
+
+# Testing
+php artisan test        # Run PHP tests
+npm run test           # Run JavaScript tests
+
+# Docker
+docker-compose up -d    # Start in detached mode
+docker-compose logs     # View container logs
+docker-compose down     # Stop containers
+```
+
+### Adding New Forms
+
+1. **Create Migration**: Add form and field definitions
+2. **Update Seeder**: Include sample data
+3. **Frontend**: Update form selection and field mapping
+4. **Validation**: Add business rules and validation logic
+
+### Extending Field Types
+
+1. **Backend**: Update FormField model and validation
+2. **Frontend**: Add UI components for new field types
+3. **Mapping**: Extend fuzzy matching for new field patterns
+4. **Export**: Update export generators for new data types
+
+## 🔒 Security Features
+
+- **CSRF Protection**: All forms protected against cross-site attacks
+- **Input Validation**: Comprehensive server-side validation
+- **File Type Validation**: Strict file type and content checking
+- **SQL Injection Prevention**: Eloquent ORM with prepared statements
+- **XSS Protection**: Output escaping and sanitization
+- **Authentication**: Secure session-based authentication
+
+## 📈 Performance Optimizations
+
+- **Asset Compilation**: Optimized CSS and JavaScript bundles
+- **Database Queries**: Efficient queries with eager loading
+- **Caching**: Route, config, and view caching for production
+- **File Processing**: Streaming file processing for large datasets
+- **Lazy Loading**: Component lazy loading for better performance
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes and test thoroughly
+4. Commit your changes: `git commit -am 'Add feature'`
+5. Push to the branch: `git push origin feature-name`
+6. Submit a pull request
+
+### Development Guidelines
+
+- Follow PSR-12 coding standards for PHP
+- Use Vue.js 3 Composition API patterns
+- Write comprehensive tests for new features
+- Update documentation for significant changes
+- Ensure responsive design compatibility
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+For support and questions:
+
+1. **Documentation**: Check this README and inline code comments
+2. **Issues**: Open a GitHub issue for bugs or feature requests
+3. **Discussions**: Use GitHub Discussions for general questions
+
+## 🙏 Acknowledgments
+
+- Laravel community for the excellent framework
+- Vue.js team for the reactive frontend framework
+- Tailwind CSS for the utility-first CSS framework
+- PhpSpreadsheet for Excel file processing capabilities
+- Clinical research community for domain expertise
+
+---
+
+**Built with ❤️ for the clinical research community**
