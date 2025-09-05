@@ -10,8 +10,8 @@ return new class extends Migration {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('file_hash')->unique();
             $table->string('version')->nullable();
-            // store raw JSON for traceability/audit
             $table->jsonb('raw_json')->nullable();
             $table->timestamps();
         });

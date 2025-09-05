@@ -16,21 +16,43 @@ class UploadController extends Controller
         if (!$file || $file->getClientOriginalExtension() !== 'json') {
             return response()->json(['status' => 'error', 'message' => 'JSON file required'], 422);
         }
-        $data = json_decode($file->get(), true);
-        if (!$data)
-            return response()->json(['status' => 'error', 'message' => 'Invalid JSON'], 422);
 
-        // Expected keys per URS:
-        // project.name, projectVersions.v/title, forms, formsVersions, followups.dump
+
+        // 🔹 Compute hash
+        $hash = hash_file('sha256', $file->getRealPath());
+
+        // 🔹 Check if project already imported
+        $existing = Project::where('file_hash', $hash)->first();
+        if ($existing) {
+            return response()->json([
+                'status' => 'exists',
+                'message' => 'The project was already imported',
+                'project_name' => $existing->name,
+                'forms' => $existing->forms()->count(),
+                'version' => $existing->version,
+                'project_id' => $existing->id,
+            ]);
+        }
+
+        $data = json_decode($file->get(), true);
+        if (!$data) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid JSON'], 422);
+        }
         $projectName = data_get($data, 'project.name', 'Unnamed Project');
         $version = data_get($data, 'projectVersions.0.v') ?? data_get($data, 'projectVersions.v');
 
-        DB::transaction(function () use ($data, $projectName, $version, &$project) {
+
+        $projectName = data_get($data, 'project.name', 'Unnamed Project');
+        $version = data_get($data, 'projectVersions.0.v') ?? data_get($data, 'projectVersions.v');
+
+        DB::transaction(function () use ($data, $projectName, $version, $hash, &$project) {
             $project = Project::create([
                 'name' => $projectName,
                 'version' => (string) ($version ?? 'v0'),
                 'raw_json' => $data,
+                'file_hash' => $hash,
             ]);
+
 
             // Build a map: form id -> title + fields (flatten as needed)
             $formsArr = data_get($data, 'forms', []);
@@ -51,7 +73,7 @@ class UploadController extends Controller
                         'label' => data_get($f, 'label'),
                         'type' => data_get($f, 'type'),
                         'required' => (bool) data_get($f, 'required', false),
-                        'options' => data_get($f, 'items', []), // item labels/values
+                        'options' => data_get($f, 'items', []),
                         'logic' => [
                             'visible_if' => data_get($f, 'visible_if'),
                             'enable_if' => data_get($f, 'enable_if'),
